@@ -1,4 +1,13 @@
-<h3>Repo list</h3>
-<ul>
-	<li *ngFor="#repo of repos | async"><a [routerLink]="['RepoDetail', {org: repo.namespace, name: repo.name}]">{{repo.name}}</a></li>
-</ul>
+<h3>List of repositories</h3>
+<table class="striped highlight">
+  <thead>
+    <tr>
+      <th data-field="id">Name of repo</th>
+      <th data-field="id">Details</th>
+    </tr>
+  </thead>
+
+  <tbody>
+      <tr *ngFor="#repo of repos | async"><a [routerLink]="['RepoDetail', {org: repo.namespace, name: repo.name}]"><td>{{repo.name}}</td></a></tr>
+  </tbody>
+</table>

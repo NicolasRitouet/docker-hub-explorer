@@ -6,16 +6,19 @@ import 'rxjs/add/operator/map';
 export class Dockerhub {
 
   private apiVersion:number = 2;
-  private loggedInToken:string = null;
 
   constructor(private http: Http) {}
 
   login(username:string, password:string) {
-    this.makeRequest('post', 'users/login/', { username, password }).subscribe(
-      data => this.loggedInToken = data.token,
+    return this.makeRequest('post', 'users/login/', { username, password }).subscribe(
+      data => {
+        console.log(data);
+        if (localStorage) {
+          localStorage.setItem('loggedInToken', data.token);
+        }
+      },
       err => console.log(err)
     );
-
   }
 
   getOrg(org:string) {
@@ -43,20 +46,23 @@ export class Dockerhub {
     if (path.substr(-1) !== '/' && path.indexOf('?') === -1) {
       path = path + '/';
     }
-    let url = `https://cors-anywhere.herokuapp.com/https://hub.docker.com/v${this.apiVersion}/${path}`;
+    let url = `http://127.0.0.1:3001/https://hub.docker.com/v${this.apiVersion}/${path}`;
 
     let headers = new Headers();
+    headers.set('Content-Type', 'application/json');
 
-    if (this.loggedInToken) {
-      headers.set('Authorization', `JWT ${this.loggedInToken}`);
+    if (localStorage && localStorage.getItem('loggedInToken')) {
+      headers.set('Authorization', `JWT ${localStorage.getItem('loggedInToken')}`);
     }
 
     let requestParams = new Request({
       method: method,
       url: url,
-      body: data,
-      headers: headers
+      body: JSON.stringify(data),
+      headers: headers,
+
     });
+    console.log(requestParams);
     return requestParams;
   }
 
